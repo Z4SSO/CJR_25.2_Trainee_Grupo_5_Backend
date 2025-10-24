@@ -1,6 +1,6 @@
 import { IsInt, IsNotEmpty, IsOptional, Min, Max, IsString } from 'class-validator';
 
-export class StoreRatingsDto {
+export class StrRatingsDto {
     
     @IsInt()
     @IsNotEmpty()

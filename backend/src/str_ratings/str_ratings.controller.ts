@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { StoreRatingsDto } from './dto/str_ratings.dto';
+import { StrRatingsDto } from './dto/str_ratings.dto';
 import { StrRatingsService } from './str_ratings.service';
 
 @Controller('str-ratings')
@@ -8,7 +8,7 @@ export class StrRatingsController {
     constructor (private readonly storeRatingsService: StrRatingsService) {}
 
     @Post()
-    async create(@Body() data: StoreRatingsDto) {
+    async create(@Body() data: StrRatingsDto) {
         return this.storeRatingsService.create(data);
     }
 
@@ -23,7 +23,7 @@ export class StrRatingsController {
     }
 
     @Put(":id")
-    async update(@Param("id") id: number, @Body() data:StoreRatingsDto) {
+    async update(@Param("id") id: number, @Body() data:StrRatingsDto) {
         return this.storeRatingsService.update(Number(id), data);
     }
 

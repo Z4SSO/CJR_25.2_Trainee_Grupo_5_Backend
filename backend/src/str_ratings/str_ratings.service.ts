@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { StoreRatingsDto } from './dto/str_ratings.dto';
+import { StrRatingsDto } from './dto/str_ratings.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
@@ -7,7 +7,7 @@ export class StrRatingsService {
 
     constructor (private prisma: PrismaService) {}
 
-    async create (data: StoreRatingsDto) {
+    async create (data: StrRatingsDto) {
         const rating = await this.prisma.storeRatings.create({
             data
         });
@@ -30,7 +30,7 @@ export class StrRatingsService {
         return ratingExists;
     }
 
-    async update(id: number, data: StoreRatingsDto) {
+    async update(id: number, data: StrRatingsDto) {
         const ratingExists = await this.prisma.storeRatings.findUnique ({
             where: {
                 id,
