@@ -8,14 +8,54 @@ export class StrRatingsService {
     constructor (private prisma: PrismaService) {}
 
     async create (data: StoreRatingsDto) {
-        await this.prisma.storeRatings.create({
-            data: {
-                user_id: data.user_id,
-                store_id: data.store_id,
-                rating: data.rating,
-                comment: data.comment,
-            },
+        const rating = await this.prisma.storeRatings.create({
+            data
         });
+        return rating;
+    }
+
+    async getAll() {
+        return await this.prisma.storeRatings.findMany();
+    }
+
+    async getUnique(id: number) {
+        const ratingExists = await this.prisma.storeRatings.findUnique ({
+            where: {
+                id,
+            }
+        });
+        if (!ratingExists) {
+            throw new Error("Avaliação não encontrada");
+        }
+        return ratingExists;
+    }
+
+    async update(id: number, data: StoreRatingsDto) {
+        const ratingExists = await this.prisma.storeRatings.findUnique ({
+            where: {
+                id,
+            }
+        });
+        if (!ratingExists) {
+            throw new Error("Avaliação não encontrada");
+        }
+        return await this.prisma.storeRatings.update({
+            data,
+            where: {
+                id,
+            }
+        });
+    }
+
+    async delete(id: number) {
+        const ratingExists = await this.prisma.storeRatings.findUnique ({
+            where: {
+                id,
+            }
+        });
+        if (!ratingExists) {
+            throw new Error("Avaliação não encontrada");
+        }
     }
 
 }
