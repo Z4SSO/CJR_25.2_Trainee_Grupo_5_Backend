@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { StrRatingsDto } from './dto/str_ratings.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
@@ -8,6 +8,28 @@ export class StrRatingsService {
     constructor (private prisma: PrismaService) {}
 
     async create (data: StrRatingsDto) {
+        const user = await this.prisma.users.findUnique({
+            where: {
+                id: data.user_id
+            }
+        });
+        if (!user) throw new NotFoundException('Usuário não encontrado');
+
+        const store = await this.prisma.users.findUnique({
+            where: {
+                id: data.store_id
+            }
+        });
+        if (!store) throw new NotFoundException('Loja não encontrado');
+
+        const existe = await this.prisma.storeRatings.findFirst({
+            where: {
+                user_id: data.user_id,
+                store_id: data.store_id,
+            }
+        });
+        if (existe) throw new BadRequestException('Usuário já avaliou esta loja');
+
         const rating = await this.prisma.storeRatings.create({
             data
         });
@@ -56,12 +78,7 @@ export class StrRatingsService {
         if (!ratingExists) {
             throw new NotFoundException("Avaliação não encontrada");
         }
-        await this.prisma.storeRatings.delete({
-            where: {
-                id,
-            }
-        });
-        return {message: 'Avaliação deletada'};
+        return await this.prisma.storeRatings.delete({ where: { id } });
     }
 
 }

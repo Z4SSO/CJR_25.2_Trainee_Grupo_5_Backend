@@ -12,12 +12,12 @@ export class StrRatingsController {
         return this.storeRatingsService.create(data);
     }
 
-    @Get(":id")
+    @Get()
     async getAll() {
         return this.storeRatingsService.getAll();
     }
 
-    @Get()
+    @Get(":id")
     async getUnique(@Param("id") id: number) {
         return this.storeRatingsService.getUnique(Number(id))
     }
