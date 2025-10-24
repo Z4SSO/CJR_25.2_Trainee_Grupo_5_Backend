@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { StoreRatingsDto } from './dto/str_ratings.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
@@ -25,7 +25,7 @@ export class StrRatingsService {
             }
         });
         if (!ratingExists) {
-            throw new Error("Avaliação não encontrada");
+            throw new NotFoundException("Avaliação não encontrada");
         }
         return ratingExists;
     }
@@ -37,7 +37,7 @@ export class StrRatingsService {
             }
         });
         if (!ratingExists) {
-            throw new Error("Avaliação não encontrada");
+            throw new NotFoundException("Avaliação não encontrada");
         }
         return await this.prisma.storeRatings.update({
             data,
@@ -54,8 +54,14 @@ export class StrRatingsService {
             }
         });
         if (!ratingExists) {
-            throw new Error("Avaliação não encontrada");
+            throw new NotFoundException("Avaliação não encontrada");
         }
+        await this.prisma.storeRatings.delete({
+            where: {
+                id,
+            }
+        });
+        return {message: 'Avaliação deletada'};
     }
 
 }

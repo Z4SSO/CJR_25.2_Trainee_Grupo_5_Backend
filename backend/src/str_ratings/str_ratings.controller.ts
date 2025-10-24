@@ -12,7 +12,7 @@ export class StrRatingsController {
         return this.storeRatingsService.create(data);
     }
 
-    @Get()
+    @Get(":id")
     async getAll() {
         return this.storeRatingsService.getAll();
     }
