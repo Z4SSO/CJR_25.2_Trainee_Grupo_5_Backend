@@ -24,8 +24,8 @@ export class UserService {
     };
   }
 
-  findbyEmail(email: string) {
-    return this.prisma.users.findUnique({
+  async findbyEmail(email: string) {
+    return await this.prisma.users.findUnique({
       where: { email },
     });
   }

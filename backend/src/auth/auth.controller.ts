@@ -10,6 +10,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(LocalAuthGuard)
     login() {
+        return 'Login ta na bala!';
         //return this.authService.login();
     }
 
