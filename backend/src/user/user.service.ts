@@ -24,6 +24,12 @@ export class UserService {
     };
   }
 
+  findbyEmail(email: string) {
+    return this.prisma.users.findUnique({
+      where: { email },
+    });
+  }
+
   findAll() {
     return `This action returns all user`;
   }
