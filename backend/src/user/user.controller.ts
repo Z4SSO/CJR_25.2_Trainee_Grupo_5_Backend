@@ -4,14 +4,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
-@Controller('user')
+@Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  //Vou deixar esse endpoint público para que vocês possam criar novos usuários sem passar pela validação
-  //Mas depois de criar, por favor, remova esse decorator (IsPublic) para que o endpoint volte a ser protegido
   @IsPublic() 
-  @Post()
+  @Post('register')
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
   }
