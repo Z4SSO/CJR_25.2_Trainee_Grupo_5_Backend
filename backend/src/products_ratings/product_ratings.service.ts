@@ -1,13 +1,13 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { productRatingsDto } from './dto/products_ratings.dto';
+import { CreateProductRatingsDto, UpdateProductRatingsDto } from './dto/products_ratings.dto';
 
 @Injectable()
 export class ProductRatingsService {
 
         constructor (private prisma: PrismaService) {}
     
-        async create (data: productRatingsDto) {
+        async create (data: CreateProductRatingsDto) {
             const user = await this.prisma.users.findUnique({
                 where: {
                     id: data.user_id
@@ -52,7 +52,7 @@ export class ProductRatingsService {
             return ratingExists;
         }
     
-        async update(id: number, data: productRatingsDto) {
+        async update(id: number, data: UpdateProductRatingsDto) {
             const ratingExists = await this.prisma.productRatings.findUnique ({
                 where: {
                     id,

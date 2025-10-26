@@ -1,50 +1,53 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { StrRatingsDto } from './dto/str_ratings.dto';
+import { CreateStoreRatingsDto, UpdateStoreRatingsDto } from './dto/str_ratings.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
 @Injectable()
-export class StrRatingsService {
+export class StoreRatingsService {
 
     constructor (private prisma: PrismaService) {}
 
-    async create (data: StrRatingsDto) {
-        const user = await this.prisma.users.findUnique({
-            where: {
-                id: data.user_id
-            }
-        });
-        if (!user) throw new NotFoundException('Usuário não encontrado');
+    async create (
+        data: CreateStoreRatingsDto,
+        storeId: number,
+        userId: number) {
 
-        const store = await this.prisma.users.findUnique({
+        const store = await this.prisma.stores.findUnique({
             where: {
-                id: data.store_id
+                id: storeId
             }
         });
-        if (!store) throw new NotFoundException('Loja não encontrado');
+        if (!store) throw new NotFoundException('Loja não encontrada');
 
         const existe = await this.prisma.storeRatings.findFirst({
             where: {
-                user_id: data.user_id,
-                store_id: data.store_id,
+                user_id: userId,
+                store_id: storeId,
             }
         });
         if (existe) throw new BadRequestException('Usuário já avaliou esta loja');
 
         const rating = await this.prisma.storeRatings.create({
-            data
+            data: {
+                ...data,
+                store_id: storeId,
+                user_id: userId,
+            }
         });
         return rating;
     }
 
-    async getAll() {
-        return await this.prisma.storeRatings.findMany();
+    async getAll(storeId: number) {
+        return await this.prisma.storeRatings.findMany({
+            where: { store_id: storeId },
+            include: { user: { select: { username: true, profile_picture_url: true }}}
+        });
     }
 
     async getUnique(id: number) {
         const ratingExists = await this.prisma.storeRatings.findUnique ({
-            where: {
-                id,
-            }
+            where: { id },
+            include: { user: {select: { username: true, profile_picture_url: true }}}
         });
         if (!ratingExists) {
             throw new NotFoundException("Avaliação não encontrada");
@@ -52,31 +55,35 @@ export class StrRatingsService {
         return ratingExists;
     }
 
-    async update(id: number, data: StrRatingsDto) {
+    async update(id: number, data: UpdateStoreRatingsDto, userId: number) {
         const ratingExists = await this.prisma.storeRatings.findUnique ({
-            where: {
-                id,
-            }
+            where: { id },
         });
         if (!ratingExists) {
             throw new NotFoundException("Avaliação não encontrada");
         }
+        if (ratingExists.user_id !== userId) {
+            throw new NotFoundException(
+                "Você não pode editar esta avaliação"
+            );
+        }
         return await this.prisma.storeRatings.update({
             data,
-            where: {
-                id,
-            }
+            where: { id },
         });
     }
 
-    async delete(id: number) {
+    async delete(id: number, userId: number) {
         const ratingExists = await this.prisma.storeRatings.findUnique ({
-            where: {
-                id,
-            }
+            where: { id },
         });
         if (!ratingExists) {
             throw new NotFoundException("Avaliação não encontrada");
+        }
+        if(ratingExists.user_id !== userId) {
+            throw new NotFoundException(
+                "Você não pode deletar esta avaliação"
+            );
         }
         return await this.prisma.storeRatings.delete({ where: { id } });
     }

@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { ProductRatingsService } from './product_ratings.service';
-import { productRatingsDto } from './dto/products_ratings.dto';
+import { CreateProductRatingsDto, UpdateProductRatingsDto } from './dto/products_ratings.dto';
 
 @Controller('product-ratings')
 export class ProductRatingsController {
@@ -8,7 +8,7 @@ export class ProductRatingsController {
         constructor (private readonly productRatingsService: ProductRatingsService) {}
     
         @Post()
-        async create(@Body() data: productRatingsDto) {
+        async create(@Body() data: CreateProductRatingsDto) {
             return this.productRatingsService.create(data);
         }
     
@@ -23,7 +23,7 @@ export class ProductRatingsController {
         }
     
         @Put(":id")
-        async update(@Param("id") id: number, @Body() data:productRatingsDto) {
+        async update(@Param("id") id: number, @Body() data: UpdateProductRatingsDto) {
             return this.productRatingsService.update(Number(id), data);
         }
     

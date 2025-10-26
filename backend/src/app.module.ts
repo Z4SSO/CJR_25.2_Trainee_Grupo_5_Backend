@@ -7,7 +7,7 @@ import { PrismaService } from './database/prisma.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { StoresModule } from './stores/stores.module';
-import { StrRatingsModule } from './str_ratings/str_ratings.module';
+import { StoreRatingsModule } from './str_ratings/str_ratings.module';
 import { ProductsRatingsModule } from './products_ratings/products_ratings.module';
 
 @Module({
@@ -15,7 +15,7 @@ import { ProductsRatingsModule } from './products_ratings/products_ratings.modul
     UserModule, 
     AuthModule, 
     StoresModule,
-    StrRatingsModule, 
+    StoreRatingsModule, 
     ProductsRatingsModule
   ],
   controllers: [AppController],
