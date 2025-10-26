@@ -7,9 +7,17 @@ import { PrismaService } from './database/prisma.service';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { StoresModule } from './stores/stores.module';
+import { StrRatingsModule } from './str_ratings/str_ratings.module';
+import { ProductsRatingsModule } from './products_ratings/products_ratings.module';
 
 @Module({
-  imports: [UserModule, AuthModule, StoresModule],
+  imports: [
+    UserModule, 
+    AuthModule, 
+    StoresModule,
+    StrRatingsModule, 
+    ProductsRatingsModule
+  ],
   controllers: [AppController],
   providers: [
     AppService, 
@@ -19,5 +27,6 @@ import { StoresModule } from './stores/stores.module';
       useClass: JwtAuthGuard,
     },
   ],
+
 })
 export class AppModule {}
