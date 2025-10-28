@@ -2,7 +2,7 @@ import { IsEmail, IsString, Matches, MaxLength, MinLength } from "class-validato
 
 export class CreateUserDto  {
 
-    @IsEmail()
+    @IsEmail({}, { message: 'Insira um endereço de e‑mail válido.' })
     email: string;
 
     @IsString()
