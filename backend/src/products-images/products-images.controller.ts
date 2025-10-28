@@ -32,12 +32,18 @@ export class ProductsImagesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProductsImageDto: UpdateProductsImageDto) {
-    return this.productsImagesService.update(+id, updateProductsImageDto);
+  update(
+    @Param('id', ParseIntPipe) id: number, 
+    @CurrentUser() user: User,
+    @Body() data: UpdateProductsImageDto) {
+    return this.productsImagesService.update(id, data, user.id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.productsImagesService.remove(+id);
+  remove(
+    @Param('id', ParseIntPipe) id: number, 
+    @CurrentUser() user: User,
+  ) {
+    return this.productsImagesService.remove(id, user.id);
   }
 }
