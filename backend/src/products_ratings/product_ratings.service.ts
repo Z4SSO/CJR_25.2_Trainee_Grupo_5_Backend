@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { CreateProductRatingsDto, UpdateProductRatingsDto } from './dto/products_ratings.dto';
 
@@ -7,44 +7,51 @@ export class ProductRatingsService {
 
         constructor (private prisma: PrismaService) {}
     
-        async create (data: CreateProductRatingsDto) {
-            const user = await this.prisma.users.findUnique({
-                where: {
-                    id: data.user_id
-                }
+        async create (
+            data: CreateProductRatingsDto,
+            productId: number,
+            userId: number) {
+            const product = await this.prisma.products.findUnique({
+                where: {id: productId}
             });
-            if (!user) throw new NotFoundException('Usuário não encontrado');
-    
-            const product = await this.prisma.users.findUnique({
-                where: {
-                    id: data.product_id
-                }
-            });
-            if (!product) throw new NotFoundException('Produto não encontrado');
-    
+            if (!product) {
+                throw new NotFoundException('Produto não encontrado')
+            }
+
             const existe = await this.prisma.productRatings.findFirst({
                 where: {
-                    user_id: data.user_id,
-                    product_id: data.product_id,
-                }
+                    user_id: userId,
+                    product_id: productId,
+                },
             });
-            if (existe) throw new BadRequestException('Usuário já avaliou este produto');
-    
-            const rating = await this.prisma.productRatings.create({
-                data
+            if (existe) {
+                throw new ConflictException('Você já avaliou este produto')
+            }
+
+            return this.prisma.productRatings.create({
+                data: {
+                    ...data,
+                    user_id: userId,
+                    product_id: productId,
+                },
             });
-            return rating;
         }
     
-        async getAll() {
-            return await this.prisma.productRatings.findMany();
+        async getAll(productId: number) {
+            const product = await this.prisma.products.findUnique({
+                where: { id: productId }
+            })
+            if (!product) {
+                throw new NotFoundException('Produto não encontrado')
+            }
+            return await this.prisma.productRatings.findMany({
+                where: { product_id: productId },
+            });
         }
     
         async getUnique(id: number) {
             const ratingExists = await this.prisma.productRatings.findUnique ({
-                where: {
-                    id,
-                }
+                where: { id: id }
             });
             if (!ratingExists) {
                 throw new NotFoundException("Avaliação não encontrada");
@@ -52,34 +59,40 @@ export class ProductRatingsService {
             return ratingExists;
         }
     
-        async update(id: number, data: UpdateProductRatingsDto) {
-            const ratingExists = await this.prisma.productRatings.findUnique ({
-                where: {
-                    id,
-                }
+        async update(ratingId: number, data: UpdateProductRatingsDto, userId: number) {
+            const rating = await this.prisma.productRatings.findUnique ({
+                where: { id: ratingId }
             });
-            if (!ratingExists) {
+
+            if (!rating) {
                 throw new NotFoundException("Avaliação não encontrada");
             }
+
+            if (rating.user_id !== userId) {
+                throw new ForbiddenException("Você não tem permissão para editar essa avaliação");
+            }
+
             return await this.prisma.productRatings.update({
-                data,
-                where: {
-                    id,
-                }
+                where: {id: ratingId},
+                data: data,
             });
         }
     
-        async delete(id: number) {
-            const ratingExists = await this.prisma.productRatings.findUnique ({
-                where: {
-                    id,
-                }
+        async delete(ratingId: number, userId: number) {
+            const rating = await this.prisma.productRatings.findUnique ({
+                where: { id: ratingId }
             });
-            if (!ratingExists) {
-                throw new NotFoundException("Avaliação não encontrada");
+            if (!rating) {
+                throw new NotFoundException('Avaliação não encontrada')
             }
-            return await this.prisma.productRatings.delete({ where: { id } });
+
+            if(rating.user_id !== userId) {
+                throw new ForbiddenException('Você não tem permissão para deletar essa avaliação')
+            }
+
+            return await this.prisma.productRatings.delete({
+                where: { id: ratingId },
+            })   
         }
-    
     }
     

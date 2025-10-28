@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStoreRatingsDto, UpdateStoreRatingsDto } from './dto/str_ratings.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
@@ -25,7 +25,7 @@ export class StoreRatingsService {
                 store_id: storeId,
             }
         });
-        if (existe) throw new BadRequestException('Usuário já avaliou esta loja');
+        if (existe) throw new ConflictException('Usuário já avaliou esta loja');
 
         const rating = await this.prisma.storeRatings.create({
             data: {

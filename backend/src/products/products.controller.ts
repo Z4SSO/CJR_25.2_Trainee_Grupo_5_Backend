@@ -32,7 +32,7 @@ export class ProductsController {
 
     @IsPublic()
     @Get(':id')
-    findOne(@Param('id') id: number){
+    findOne(@Param('id', ParseIntPipe) id: number){
         return this.productsService.findOne(id);
     }
 
@@ -47,7 +47,7 @@ export class ProductsController {
 
     @Delete(':id')
     delete(
-        @Param('id') id: number,
+        @Param('id', ParseIntPipe) id: number,
         @CurrentUser() user: User,
     ){
         return this.productsService.delete(id, user.id);
