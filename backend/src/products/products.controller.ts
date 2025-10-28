@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, ParseIntPipe, Patch} from '@nestjs/common';
 import { ProductsService } from './products.service';   
 import { CreateProductsDto } from './dto/products.dto';   
 import { CurrentUser } from 'src/auth/decorators/curretn-user.decorator';
 import { User } from 'src/user/entity/user.entity';
 import { UpdateProductsDto } from './dto/update-products.dto';
+import { IsPublic } from 'src/auth/decorators/is-public.decorator';
 
 
 @Controller('products')
@@ -20,20 +21,35 @@ export class ProductsController {
         {
         return this.productsService.create(data, storeId, user.id);
     }
-    @Get()
-    findAll(){
-        return this.productsService.findAll();
+
+    @IsPublic()
+    @Get('store/:storeId')
+    findAll(
+        @Param('storeId', ParseIntPipe) storeId: number
+    ){
+        return this.productsService.findAll(storeId);
     }
+
+    @IsPublic()
     @Get(':id')
     findOne(@Param('id') id: number){
-        return this.productsService.findOne(Number(id));
+        return this.productsService.findOne(id);
     }
-    @Put(':id')
-    update(@Param('id') id: number, @Body() data: UpdateProductsDto){
-        return this.productsService.update(Number(id), data);
+
+    @Patch(':id')
+    update(
+        @Param('id', ParseIntPipe) id: number, 
+        @Body() data: UpdateProductsDto,
+        @CurrentUser() user: User
+    ){
+        return this.productsService.update(id, data, user.id);
     }
+
     @Delete(':id')
-    delete(@Param('id') id: number){
-        return this.productsService.delete(Number(id));
+    delete(
+        @Param('id') id: number,
+        @CurrentUser() user: User,
+    ){
+        return this.productsService.delete(id, user.id);
     }  
 }

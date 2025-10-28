@@ -1,16 +1,16 @@
-//import {StoreDto} from;
-//import {CategoryDto} from;
-//import {ProductsRatingsDto} from;
-//import {ProductsImagesDto} from ;
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { isNotEmpty, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateProductsDto {
-  //store: StoreDto;
-  //category: CategoryDto;
+
+  @IsNumber()
+  @IsNotEmpty({ message: 'A categoria é obrigatória.' })
+  category_id: number;
+
   @IsNotEmpty()
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsString()
   description?: string;
 
@@ -19,6 +19,4 @@ export class CreateProductsDto {
 
   @IsNumber()
   stock: number;
-  //product_ratings: ProductsRatingsDto;
-  //product_images: ProductsImagesDto;
 }
