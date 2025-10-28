@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ProductsDto } from './dto/products.dto';
-import type { PrismaService } from '../database/prisma.service';
+import { PrismaService } from '../database/prisma.service';
+import { UpdateProductsDto } from './dto/update-products.dto';
 
 @Injectable()
 export class ProductsService {
@@ -12,18 +13,40 @@ export class ProductsService {
             data
         })
         return products;
+
+        /* 
+            Para integração com crud e dto de imagens:
+
+                const {product_images, ...rest} = data;
+                const products = await this.prisma.products.create ({
+                data: {
+                    ...rest,
+                    ...(product_images  
+                        ? { product_images: { create: product_images.map (img => ( { image_url: img.image_url, order: img.order }))}}
+                        : {}),
+                },
+
+            });
+            return products;
+    
+            
+        */ 
     }
 
     async findAll() {
-        return this.prisma.products.findMany();
+        return this.prisma.products.findMany({
+            include: {
+                product_images: true
+            }   
+        });
     }
 
-    async update(id: number, data: ProductsDto) {
+    async update(id: number, data: UpdateProductsDto) {
         const productsexists = await this.prisma.products.findUnique({
             where: {id}
         });
         if(!productsexists){
-            throw new Error("Produto não encontrado")
+            throw new NotFoundException("Produto não encontrado")
         }
         return await this.prisma.products.update({
             data,
@@ -36,7 +59,7 @@ export class ProductsService {
             where: {id}
         });
         if(!productsexists){
-            throw new Error("Produto não encontrado")
+            throw new NotFoundException("Produto não encontrado")
         }
         return await this.prisma.products.delete({
             where: {id}
@@ -48,7 +71,7 @@ export class ProductsService {
             where: {id}
         });
         if(!productsexists){
-            throw new Error("Produto não encontrado")
+            throw new NotFoundException("Produto não encontrado")
         }
         return productsexists;
     }

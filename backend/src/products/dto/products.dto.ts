@@ -1,16 +1,20 @@
-//import {StoreDto} from;
-//import {CategoryDto} from;
-//import {ProductsRatingsDto} from;
-//import {ProductsImagesDto} from ;
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+//import { ProductsImagesDto } from ...
 
 export class ProductsDto {
-  //store: StoreDto;
-  //category: CategoryDto;
+
+  @IsNumber()
+  store_id: number;
+
+  @IsNumber()
+  category_id: number;
+
   @IsNotEmpty()
   @IsString()
   name: string;
 
+  @IsOptional()
   @IsString()
   description?: string;
 
@@ -19,6 +23,10 @@ export class ProductsDto {
 
   @IsNumber()
   stock: number;
-  //product_ratings: ProductsRatingsDto;
-  //product_images: ProductsImagesDto;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductsImagesDto)
+  product_images?: ProductsImagesDto[];
 }
