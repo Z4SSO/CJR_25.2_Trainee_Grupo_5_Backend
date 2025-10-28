@@ -9,6 +9,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { StoresModule } from './stores/stores.module';
 import { StoreRatingsModule } from './str_ratings/str_ratings.module';
 import { ProductsRatingsModule } from './products_ratings/products_ratings.module';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -16,8 +17,10 @@ import { ProductsRatingsModule } from './products_ratings/products_ratings.modul
     AuthModule, 
     StoresModule,
     StoreRatingsModule, 
-    ProductsRatingsModule
+    ProductsRatingsModule,
+    ProductsModule
   ],
+
   controllers: [AppController],
   providers: [
     AppService, 
