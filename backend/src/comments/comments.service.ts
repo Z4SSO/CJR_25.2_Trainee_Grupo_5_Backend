@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CommentDto } from './comment.dto';
 import { PrismaService } from 'src/database/prisma.service';
 
@@ -7,24 +7,43 @@ export class CommentsService {
 
   constructor(private prisma: PrismaService) { }
 
-  async create(data: CommentDto) {
+  async createStoreRatingComment(data: CommentDto, StoreRatingId: number, UserId: number) {
+    const StoreRating = await this.prisma.StoreRatings.findUnique({
+      where: { id: StoreRatingId }
+    })
 
-    const hasStoreId = data.store_rating_id !== undefined && data.store_rating_id !== null;
-    const hasProductId = data.product_rating_id !== undefined && data.product_rating_id !== null;
-
-    if (hasStoreId === hasProductId) {
-      throw new Error('Comment must have only one store_rating_id OR product_rating_id, one or the other');
+    if (!StoreRating) {
+      throw new NotFoundException("Avaliacao nao encontrada")
     }
 
-
-
-
-
-    const comment = await this.prisma.ratingComment.create({
-      data
-    });
-    return comment;
+    return this.prisma.RatingComments.create({
+      data: {
+        ...data,
+        user_id: UserId,
+        store_rating_id: StoreRatingId,
+      },
+    })
   }
+
+  async createProductRatingComment(data: CommentDto, ProductRatingId: number, UserId: number) {
+    const ProductRating = await this.prisma.ProductRatings.findUnique({
+      where: { id: ProductRatingId }
+    })
+
+    if (!ProductRating) {
+      throw new NotFoundException("Avaliacao nao encontrada")
+    }
+
+    return this.prisma.RatingComments.create({
+      data: {
+        ...data,
+        user_id: UserId,
+        product_rating_id: ProductRatingId,
+      },
+    })
+  }
+
+
 
   async findAll() {
     return this.prisma.ratingComment.findMany();
