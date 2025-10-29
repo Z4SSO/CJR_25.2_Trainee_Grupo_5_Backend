@@ -6,13 +6,21 @@
 //  order      Int
 //}
 
-import { IsUrl } from "class-validator";
+import { IsInt, IsNotEmpty, IsNumber, IsString, IsUrl, Min } from "class-validator";
 
 
 export class CreateProductsImageDto {
 
     @IsUrl()
-    image_url: String;
+    @IsString()
+    @IsNotEmpty()
+    image_url: string;
+
+    @IsNumber()
+    @IsInt()
+    @Min(0)
+    @IsNotEmpty()
+    order: number;
 
 }
 

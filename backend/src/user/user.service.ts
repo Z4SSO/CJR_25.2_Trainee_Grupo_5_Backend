@@ -69,11 +69,23 @@ export class UserService {
     if (updateUserDto.password_hash){
       dataToUpdate.password_hash = await bcrypt.hash(updateUserDto.password_hash, 10)
     };
+
+    const updatedUser = await this.prisma.users.update({
+      where: { id: id },
+      data: dataToUpdate,
+    });
+
+    return {
+      ...updatedUser,
+      password_hash: undefined,
+    };
   }
 
   async remove(id: number) {
-    return await this.prisma.users.delete({
-      where: { id },
+    const userToDelete = await this.findOne(id);
+    await this.prisma.users.delete({
+      where: { id: id },
     });
+    return userToDelete
   }
 }

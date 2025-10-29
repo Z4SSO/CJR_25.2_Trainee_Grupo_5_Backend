@@ -41,7 +41,7 @@ export class UserController {
   }
 
   @IsPublic()
-  @Get(':id')
+  @Get(':id') 
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOne(id);
   }
