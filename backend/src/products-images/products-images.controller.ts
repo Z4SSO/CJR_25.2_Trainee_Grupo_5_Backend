@@ -25,6 +25,7 @@ export class ProductsImagesController {
     return this.productsImagesService.findAll(productId);
   }
 
+  @IsPublic()
   @Get(':id')
   findOne(
     @Param('id', ParseIntPipe) id: number) {

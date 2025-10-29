@@ -11,6 +11,7 @@ import { StoreRatingsModule } from './str_ratings/str_ratings.module';
 import { ProductsRatingsModule } from './products_ratings/products_ratings.module';
 import { ProductsModule } from './products/products.module';
 import { ProductsImagesModule } from './products-images/products-images.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { ProductsImagesModule } from './products-images/products-images.module';
     StoreRatingsModule, 
     ProductsRatingsModule,
     ProductsModule,
-    ProductsImagesModule
+    ProductsImagesModule,
+    CommentsModule
   ],
 
   controllers: [AppController],
