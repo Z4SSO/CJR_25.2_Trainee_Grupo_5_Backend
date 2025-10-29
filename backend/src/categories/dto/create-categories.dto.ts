@@ -6,7 +6,7 @@
 //  child_categories   Categories[] @relation("CategoryHierarchy")
 import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 
-export class CategoriesDto {
+export class CreateCategoriesDto {
     
     @IsNotEmpty()
     @IsString()

@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { IsPublic } from 'src/auth/decorators/is-public.decorator';
+import { CurrentUser } from 'src/auth/decorators/curretn-user.decorator';
+import { User } from './entity/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -21,18 +23,28 @@ export class UserController {
     return this.userService.findAll();
   }
 
+  @Get('me')
+  getMyProfile(@CurrentUser() user: User){
+    return this.userService.findOne(user.id);
+  }
+
+  @Patch('me')
+  updateMyProfile(
+    @CurrentUser() user: User,
+    @Body() updateUserDto: UpdateUserDto) {
+    return this.userService.update(user.id, updateUserDto);
+  }
+
+  @Delete('me')
+  remove(@CurrentUser() user: User) {
+    return this.userService.remove(user.id);
+  }
+
+  @IsPublic()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.userService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
-  }
 }

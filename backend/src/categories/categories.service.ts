@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { CategoriesDto } from './dto/create-categories.dto';
+import { CreateCategoriesDto } from './dto/create-categories.dto';
 import { UpdateCategoriesDto } from './dto/update-categories.dto';
 
 @Injectable()
@@ -8,22 +8,19 @@ export class CategoriesService {
 
     constructor (private prisma: PrismaService) {}
 
-    async create(data: CategoriesDto) {
-        const category = await this.prisma.categories.create ({
-            data
-        })
-        if(category.parent_category_id){
-            await this.prisma.categories.update({
-                where: {id: category.parent_category_id},
-                data: {
-                    child_categories: {
-                        connect: {id: category.id}
-                    }
-                }
+    async create(data: CreateCategoriesDto) {
+        if (data.parent_category_id) {
+            const parentCategory = await this.prisma.categories.findUnique({
+                where: { id: data.parent_category_id },
             });
-            
-        }        
-        return category;
+            if (!parentCategory) {
+                throw new NotFoundException("Categoria 'pai' não encontrada")
+            }
+        }
+
+        return this.prisma.categories.create({
+            data: data,
+        });
     }
 
     async findAll() {
@@ -64,5 +61,4 @@ export class CategoriesService {
         }
         return categoryexists;
     }
-
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/database/prisma.service';
@@ -30,16 +30,45 @@ export class UserService {
     });
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    const users = await this.prisma.users.findMany(); 
+
+    const userWithoutPassword = users.map(user => {
+
+      return {
+        ...user,
+        password_hash: undefined,
+      };
+    });
+    
+    return userWithoutPassword
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: number) {
+    const user = await this.prisma.users.findUnique({
+      where: { id: id }
+    })
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado')
+    }
+
+    return {
+      ...user,
+      password_hash: undefined,
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    await this.findOne(id)
+
+    const dataToUpdate = {
+      ...updateUserDto 
+    };
+
+    if (updateUserDto.password_hash){
+      dataToUpdate.password_hash = await bcrypt.hash(updateUserDto.password_hash, 10)
+    };
   }
 
   async remove(id: number) {
