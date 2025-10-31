@@ -18,6 +18,7 @@ export class AuthController {
         return this.authService.login(req.user);
     }
 
+    @IsPublic()
     @Post('forgot')
     async forgotPass(@Body() body: { email: string }) {
         return this.authService.forgotPassword(body.email);
