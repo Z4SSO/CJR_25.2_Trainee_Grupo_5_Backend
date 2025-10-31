@@ -20,7 +20,7 @@ export class AuthController {
 
     @IsPublic()
     @Post('forgot')
-    async forgotPass(@Body() body: { email: string }) {
+    async forgotPassword(@Body() body: { email: string }) {
         return this.authService.forgotPassword(body.email);
     }
 
@@ -28,6 +28,12 @@ export class AuthController {
     @Post('validate')
     async validateCode(@Body() body: { email: string, code: string }) {
         return this.authService.verifyCode(body.email, body.code);
+    }
+
+    @IsPublic()
+    @Post('reset')
+    async resetPassword(@Body() body: { userId: number, newPassword: string }) {
+        return this.authService.resetPassword(body.userId, body.newPassword);
     }
 
 }

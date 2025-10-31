@@ -72,4 +72,7 @@ export class AuthService {
         return 'method not implemented yet';
     }
 
+    async resetPassword(userId: number ,newPassword: string) {
+        return 'method not implemented yet';
+    }
 }
