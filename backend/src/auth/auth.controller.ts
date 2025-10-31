@@ -25,7 +25,7 @@ export class AuthController {
     }
 
     @IsPublic()
-    @Post('validate')
+    @Post('verify')
     async validateCode(@Body() body: { email: string, code: string }) {
         return this.authService.verifyCode(body.email, body.code);
     }
