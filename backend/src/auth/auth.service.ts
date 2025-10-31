@@ -69,7 +69,30 @@ export class AuthService {
     }
 
     async verifyCode(email: string, code: string) {
-        return 'method not implemented yet';
+        const user = await this.userService.findbyEmail(email);
+        if (!user) {
+            throw new BadRequestException('Usuário não encontrado');
+        }
+
+        const record = await this.prisma.passwordReset.findFirst({
+            where: {
+                userId: user.id,
+                code,
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        });
+
+        if (!record) {
+            throw new BadRequestException('Código inválido');
+        }
+
+        if (record.expiresAt < new Date()) {
+            throw new BadRequestException('Código expirado');
+        }
+
+        return {message: 'Código validado com sucesso!', userId: user.id};
     }
 
     async resetPassword(userId: number ,newPassword: string) {
