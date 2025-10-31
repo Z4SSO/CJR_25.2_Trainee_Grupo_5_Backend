@@ -1,4 +1,4 @@
-import { Controller, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import * as AuthRequest from './models/AuthRequest';
@@ -16,6 +16,11 @@ export class AuthController {
         console.log(req.user);
 
         return this.authService.login(req.user);
+    }
+
+    @Post('forgot')
+    async forgotPass(@Body() body: { email: string }) {
+        return this.authService.forgotPassword(body.email);
     }
 
 }
