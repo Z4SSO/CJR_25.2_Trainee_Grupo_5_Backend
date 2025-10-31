@@ -65,7 +65,11 @@ export class AuthService {
             }
         });
         await this.mailService.sendResetCode(user.email, code);
-        return {message: 'Instruções para recuperação de senha enviadas para o seu email!'}
+        return {message: 'Código para recuperação de senha enviadas para o seu email!'}
+    }
+
+    async verifyCode(email: string, code: string) {
+        return 'method not implemented yet';
     }
 
 }

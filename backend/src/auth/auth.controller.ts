@@ -24,4 +24,10 @@ export class AuthController {
         return this.authService.forgotPassword(body.email);
     }
 
+    @IsPublic()
+    @Post('validate')
+    async validateCode(@Body() body: { email: string, code: string }) {
+        return this.authService.verifyCode(body.email, body.code);
+    }
+
 }
