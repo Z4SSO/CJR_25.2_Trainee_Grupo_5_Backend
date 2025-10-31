@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { LocalStrategy } from './strategies/local.strategy';
@@ -23,6 +23,6 @@ import { MailService } from './auxiliar/mail.service';
 })
 export class AuthModule {
   configure(consomer: MiddlewareConsumer) {
-    consomer.apply(LoginValidationMiddleware).forRoutes('login');
+    consomer.apply(LoginValidationMiddleware).forRoutes({ path: 'login', method: RequestMethod.POST });
   }
 }
