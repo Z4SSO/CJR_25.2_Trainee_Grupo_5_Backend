@@ -5,11 +5,15 @@ import { UserPayload } from './models/UserPayload';
 import { User } from 'src/user/entity/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { UserToken } from './models/UserToken';
+import { PrismaService } from 'src/database/prisma.service';
+import { MailService } from './auxiliar/mail.service';
 
 @Injectable()
 export class AuthService {
     constructor(private readonly userService: UserService,
                 private readonly jwtService: JwtService,
+                private readonly prisma: PrismaService,
+                private readonly mailService: MailService
     ) {}
 
     login(user: User):UserToken {
@@ -49,7 +53,19 @@ export class AuthService {
         if (!user) {
             throw new BadRequestException('Usuário não encontrado');
         }
-        return { message: 'Instruções para recuperação de senha foram enviadas para o seu email.' };
+
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        const expiresAt = new Date();
+        expiresAt.setMinutes(expiresAt.getMinutes() + 10); 
+        await this.prisma.passwordReset.create({
+            data:{
+                userId: user.id,
+                code,
+                expiresAt
+            }
+        });
+        await this.mailService.sendResetCode(user.email, code);
+        return {message: 'Instruções para recuperação de senha enviadas para o seu email!'}
     }
 
 }
