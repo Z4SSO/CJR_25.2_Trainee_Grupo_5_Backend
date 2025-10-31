@@ -30,6 +30,7 @@ export class ProductsController {
         return this.productsService.findAllByStore(storeId);
     }
 
+    @IsPublic()
     @Get('category/:categoryId')
     findAllByCategory(
         @Param('categoryId', ParseIntPipe) categoryId: number
