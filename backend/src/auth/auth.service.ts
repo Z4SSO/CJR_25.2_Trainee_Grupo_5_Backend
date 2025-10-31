@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { UserPayload } from './models/UserPayload';
@@ -42,6 +42,14 @@ export class AuthService {
 
         throw new Error('Credenciais inválidas');
 
+    }
+
+    async forgotPassword(email: string) {
+        const user = await this.userService.findbyEmail(email);
+        if (!user) {
+            throw new BadRequestException('Usuário não encontrado');
+        }
+        return { message: 'Instruções para recuperação de senha foram enviadas para o seu email.' };
     }
 
 }
