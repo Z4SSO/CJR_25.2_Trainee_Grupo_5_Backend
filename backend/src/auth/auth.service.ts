@@ -96,6 +96,8 @@ export class AuthService {
     }
 
     async resetPassword(userId: number ,newPassword: string) {
-        return 'method not implemented yet';
+        await this.userService.update(userId, { password_hash: newPassword });
+        await this.prisma.passwordReset.deleteMany({where: {userId}});
+        return {message: 'Senha alterada com sucesso!'};
     }
 }
